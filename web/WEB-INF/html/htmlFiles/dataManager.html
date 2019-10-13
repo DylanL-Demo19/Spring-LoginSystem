@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            function getName(){
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET","/SpringLoginSystem/GetName",false);
+                xhttp.send();
+                var res = xhttp.responseText;
+                document.getElementById("nameMessage").innerHTML = res;
+            }       
+            function showChangeItem(){
+                document.getElementById("changeItem").style.display = "block";
+            }
+            var oldPasswordOK = 0;
+            function checkPassword(){
+                var password = document.getElementById("oldPassword");
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("get","/SpringLoginSystem/CheckPassword?password=" + password.value.toString() ,false);
+                xhttp.send();
+                var v = xhttp.responseText;                
+                var message = document.getElementById("oldPasswordMessage");
+                if(v === "-1"){                    
+                    message.style.color = "red";
+                    message.innerHTML = "The old password is wrong.";
+                    password.select();
+                    oldPasswordOK = 0;
+                }else{
+                    message.innerHTML = "";
+                    oldPasswordOK = 1;
+                }
+                
+            }
+            function doChange(){
+                if(!oldPasswordOK){
+                    return;
+                }
+                var message = document.getElementById("newPasswordMessage");
+                message.style.color = "red";
+                message.innerHTML = "";
+
+                var oldPassword = document.getElementById("oldPassword").value.toString();
+                var newPasswordFir = document.getElementById("newPasswordFir").value.toString();
+                var newPasswordSec = document.getElementById("newPasswordSec").value.toString();
+                if(newPasswordFir !== newPasswordSec){
+                    message.innerHTML = "First and Second are not the same.";                        
+                    return;
+                }
+                if(oldPassword === newPasswordFir){
+                    message.innerHTML = "Old password and new password are the same."; 
+                    return
+                }
+
+                if(newPasswordSec.length < 8){
+                    message.innerHTML = "New password format is wrong.";   
+                    return;
+                } 
+                
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("get","/SpringLoginSystem/ChangePassword?password=" + newPasswordFir ,false);
+                xhttp.send();
+                var v = xhttp.responseText;                
+                
+                var message = document.getElementById("hasChanged");
+                if(v === "-1"){                    
+                    message.style.color = "red";
+                    message.innerHTML = "The change has been fail. Please try again later.";
+                }else{
+                    message.innerHTML = "The change has been successed";
+                }
+                
+                
+                document.getElementById("changeItem").style.display = "none";
+            }
+
+
+        </script>
+    </head>
+    <body onload="getName()">
+        <h2>Manage your personal data</h2>
+        Hi, <output id="nameMessage"></output>. You can change your password here.<br>
+        <button onclick="showChangeItem()">Change Password</button><br>
+         <p id="changeItem"  style="display:none">
+            Old Password : <input type="password" id="oldPassword" onblur="checkPassword()"><output id="oldPasswordMessage"></output><br>
+            New Password (First input) : <input type="password" id="newPasswordFir"><output id="newPasswordMessage"></output><br>
+            New Password (Second input) : <input type="password" id="newPasswordSec"><br>
+            <button onclick="doChange()">Do Change</button><br>
+        </p>
+        <p id="hasChanged"></p>
+        <a href="/SpringLoginSystem/htmlFiles/welcome.htm">Go To Welcome Page</a><br>
+        <a href="/SpringLoginSystem/htmlFiles/inputName.htm">ReLogin</a><br>
+        <a href="/SpringLoginSystem/index.htm">Home</a><br>
+    </body>
+</html>

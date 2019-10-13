@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Customer Table</title>
+        <script>
+            var datas;
+            var showDatas;
+            function initPage(){
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("get","/SpringLoginSystem/GetAllCustomersJSON",false);
+                xhttp.send();
+                var responseText = xhttp.responseText;
+                datas = JSON.parse(responseText);
+                showDatas = datas.customers;
+                
+                var citys = [];
+                var index;
+                for(index in datas.customers){
+                    var city = datas.customers[index].city;
+                    if(citys.indexOf(city) == -1){
+                        citys.push(city);
+                    }
+                }
+                citys.sort();
+                
+                var citySelect = document.getElementById("citySelect");
+                for(index in citys){
+                    var option = document.createElement("option");
+                    option.text = citys[index];
+                    citySelect.add(option);
+                }
+                showTable();
+            }
+            
+            function showTable(){
+                var table = "<table border=1><tr><th>Customer ID</th><th>Name</th><th>E-mail</th><th>Phone</th><th>City</th></tr>";
+                var index;
+                for(index in showDatas){
+                   table += "<tr><td>" + showDatas[index].customerId + "</td>" +
+                            "<td>" + showDatas[index].name + "</td>" +
+                            "<td>" + showDatas[index].email + "</td>" + 
+                            "<td>" + showDatas[index].phone + "</td>"+ 
+                            "<td>" + showDatas[index].city + "</td></tr>";
+                }
+                
+                table += "</table>";
+                
+                document.getElementById("customerTable").innerHTML = table;                
+            }
+            function selectCity(){
+                var city = document.getElementById("citySelect").value;
+                showDatas = datas.customers.filter(function(customer){
+                    if(city === "All Citys"){
+                        return customer;
+                    }
+                    return customer.city === city;                    
+                });
+               showTable();
+            }
+            
+            function sortDatas(){
+                var field = document.getElementById("sortSelect").value;
+                showDatas.sort(function(a, b){
+                    var x, y;
+                    switch(field){
+                        case "Customer ID":
+                            x = a.customerId;
+                            y = b.customerId;
+                            return x - y;
+                            break;
+                        case "Name":
+                            x = a.name;
+                            y = b.name;
+                            break;
+                        case "E-mail":
+                            x = a.email;
+                            y = b.email;
+                            break;
+                        case "Phone":
+                            x = a.phone;
+                            y = b.phone;
+                            break;
+                        case "City":
+                            x = a.city;
+                            y = b.city;
+                            break;
+                    }
+                    if(x > y){
+                        return 1;
+                    }
+                    if(x < y){
+                        return -1;
+                    }
+                    return 0;
+                });
+                showTable();                
+            }  
+        </script>
+        
+    </head>
+    <body onload="initPage()">
+        Select a city name : <select id="citySelect" onchange="selectCity()"><option>All Citys</option></select> 
+        Sort By : <select id="sortSelect" onchange="sortDatas()">
+            <option>Customer ID</option>
+            <option>Name</option>
+            <option>E-mail</option>
+            <option>Phone</option>
+            <option>City</option>
+        </select><br>
+        <p id="customerTable"></p>
+        <a href="/SpringLoginSystem/htmlFiles/welcome.htm">Welcome Page</a><br>
+        <a href="/SpringLoginSystem/index.htm">Home Page</a>
+    </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            var nameOK = 0;
+            var passwordOK = 0;
+            function init(){
+                var name = location.search.toString().substr(1);
+                document.getElementById("newID").value = name;
+                document.getElementById("newID").select();
+            }
+            function checkName(){
+                var name = document.getElementById("newID").value.toString();
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET","/SpringLoginSystem/CheckName?name="+name,false);
+                xhttp.send();
+                var res = xhttp.responseText;
+                var message = document.getElementById("idMessage");
+                if(res === "-1"){
+                    message.innerHTML = "OK";
+                    nameOK = 1;
+                }else{
+                    message.innerHTML = "NOT OK";
+                    nameOK = 0;
+                }
+            }
+            function checkPassword(){
+                var name = document.getElementById("newID").value.toString();
+                var password = document.getElementById("password").value.toString();
+                var passwordMessage = document.getElementById("passwordMessage");
+                if(password.length < 8 || password === name){
+                    passwordMessage.innerHTML = "NOT OK";
+                    passwordOK = 0;
+                }else{
+                    passwordMessage.innerHTML = "OK";    
+                    passwordOK = 1;         
+                }               
+            }
+            function addMember(){
+                if(nameOK === 0){
+                    window.alert("Name is wrong");
+                    return;
+                }
+                if(passwordOK === 0){
+                    window.alert("password is wrong");
+                    return;
+                }
+                var name = document.getElementById("newID").value.toString();
+                var password = document.getElementById("password").value.toString();
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET","/SpringLoginSystem/AddMember?name="+name+"&password="+password,false);
+                xhttp.send();
+                var res = xhttp.responseText;
+                if(res === "1"){
+                    location.assign("/SpringLoginSystem/htmlFiles/welcome.htm");
+                }else{
+                    location.assign("/SpringLoginSystem/index.htm");
+                }
+            }
+        </script>
+    </head>
+    <body onload="init()">
+        <H2>Add New Member</H2>
+        Please input a new ID for you : <input type="text" id="newID" size="10" onblur="checkName()">
+        <output id="idMessage" ></output> <br>
+        Please input your password: :<input type="password" id="password" size="10" onblur="checkPassword()">
+        <output id="passwordMessage" ></output> <br>        
+        <button onclick="addMember()">Send</button> <button >Reset</button>
+        <p><a href="../index.htm">Back Home</a></p>
+    </body>
+</html>

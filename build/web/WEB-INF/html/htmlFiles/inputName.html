@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Enter name</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            var wrongTimes = 1;
+            function checkName(){
+                var xhttp = new XMLHttpRequest();
+                var name = document.getElementById("name").value;                
+                xhttp.open("GET", "/SpringLoginSystem/CheckName?name=" + name, false);                
+                xhttp.send();
+                var responseText = xhttp.responseText;
+                //document.write(responseText);
+                if(responseText === "1"){
+                    window.location.assign("/SpringLoginSystem/htmlFiles/inputPassword.htm");
+                }
+                if(responseText === "-1"){                    
+                    if(wrongTimes === 3){
+                        var strName = document.getElementById("name").value.toString();
+                        window.location.assign("/SpringLoginSystem/htmlFiles/addMember.htm?" + name);
+                    }
+                    document.getElementById("message").innerHTML = "The name is wrong, try again please.<br/>";
+                    wrongTimes++;
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <output id="message"></output>
+        Please input your name : <input id="name" type="text" size="10" ><button onclick="checkName()">Login</button><br>        
+    </body>
+</html>
